@@ -13,9 +13,10 @@ st.sidebar.markdown("""
 **Smartpoint** é uma aplicação para rastreamento e análise de deslocamento de operadores em linhas de produção industriais.
 
 **Tecnologia Utilizada:**
-- Localização em tempo real (RTLS)
+- Localização em tempo real (UWB)
+- IOT com Esp32
 - Visualização com Streamlit e Plotly
-- Simulação com dados sintéticos
+- Coleta e armazenamento dos dados
 
 **Benefícios Inovadores:**
 - Otimização de layout de estações de trabalho
@@ -23,7 +24,7 @@ st.sidebar.markdown("""
 - Suporte à engenharia de processos
 
 **Desenvolvido por:**  
-Equipe de Engenharia de Processos
+Eng Diógenes Oliveira
 """)
 
 # Tabs da aplicação
@@ -134,63 +135,16 @@ with tab1:
     st.plotly_chart(fig2, use_container_width=True)
 
     # Gráfico 3: Pontos + ondas radiais UWB
-    frames3 = []
-    num_waves = 5
-    max_radius = 2.5
-    wave_spacing = 0.5
-    wave_speed = 0.1
+    import streamlit as st
+    import streamlit.components.v1 as components
 
-    for i in range(1, len(path)):
-        data = []
-        # Pontos do operador
-        data.append(go.Scatter(x=path[:i, 0], y=path[:i, 1], mode='markers',
-                               marker=dict(size=6, color='blue'), name='Pontos'))
-        # Antenas
-        data.append(go.Scatter(x=antennas[:, 0], y=antennas[:, 1], mode='markers+text',
-                               marker=dict(color='red', size=10),
-                               text=[f"Antena {j + 1}" for j in range(4)],
-                               textposition="top center",
-                               name='Antenas'))
-        # Ondas radiais animadas
-        for ant in antennas:
-            for w in range(num_waves):
-                radius = (i * wave_speed - w * wave_spacing)
-                if 0 < radius < max_radius:
-                    opacity = max(0.05, 1 - radius / max_radius)
-                    theta = np.linspace(0, 2 * np.pi, 100)
-                    x_wave = ant[0] + radius * np.cos(theta)
-                    y_wave = ant[1] + radius * np.sin(theta)
-                    data.append(go.Scatter(
-                        x=x_wave, y=y_wave, mode='lines',
-                        line=dict(color='blue', width=2),
-                        opacity=opacity,
-                        showlegend=False
-                    ))
-        frames3.append(go.Frame(data=data, name=str(i)))
+    # Carrega o conteúdo do HTML
+    with open("ondas_radiais_carro_area_montagem.html", "r", encoding="utf-8") as f:
+        html_content = f.read()
 
-    fig3 = go.Figure(
-        data=[
-            go.Scatter(x=[], y=[], mode='markers', name='Pontos'),
-            go.Scatter(x=antennas[:, 0], y=antennas[:, 1], mode='markers+text',
-                       marker=dict(color='red', size=10),
-                       text=[f"Antena {j + 1}" for j in range(4)],
-                       textposition="top center",
-                       name='Antenas')
-        ],
-        layout=go.Layout(
-            title="Pontos do Operador + Ondas Radiais UWB",
-            xaxis=dict(range=[-1, 11], title="Metros (x)"),
-            yaxis=dict(range=[-1, 7], title="Metros (y)"),
-            updatemenus=[dict(type="buttons",
-                              buttons=[dict(label="▶️ Iniciar",
-                                            method="animate",
-                                            args=[None, {"frame": {"duration": 100, "redraw": True},
-                                                         "fromcurrent": True}])])]
-        ),
-        frames=frames3
-    )
-
-    st.plotly_chart(fig3, use_container_width=True)
+    # Substitui o gráfico 3 por este HTML
+    st.markdown("### Animação com Antenas e Área de Montagem - UWB ")
+    components.html(html_content, height=550, scrolling=False)
 
     st.metric(label="📏 Distância Total Percorrida", value=f"{df['dist_acumulada'].iloc[-1]:.2f} metros")
     with tab2:
