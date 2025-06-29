@@ -43,7 +43,7 @@ df["step"] = df.index
 df["dist"] = np.sqrt(np.sum(np.diff(path, axis=0, prepend=path[0:1])**2, axis=1))
 df["dist_acumulada"] = df["dist"].cumsum()
 with tab1:
-    st.header("🎥 Animação de Rastreamento do Operador")
+    st.header("🎥 Smartpoint - Rastreador de movimentação para linha de produção")
 
     # Definição dos vértices do quadrilátero (antenas)
     antennas = np.array([
