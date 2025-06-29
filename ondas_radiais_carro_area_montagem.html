@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ondas Radiais com Área de Montagem</title>
+    <style>
+        body {
+            background-color: #fff;
+            margin: 0;
+            overflow: hidden;
+        }
+        svg {
+            display: block;
+            margin: auto;
+            background-color: #f9f9f9;
+        }
+        .antenna {
+            fill: red;
+        }
+        .wave {
+            fill: none;
+            stroke: red;
+            stroke-width: 2;
+            opacity: 0.5;
+        }
+        .car {
+            fill: gray;
+        }
+        .assembly-area {
+            fill: none;
+            stroke: black;
+            stroke-width: 2;
+            stroke-dasharray: 8,4;
+        }
+        .operator {
+            fill: blue;
+        }
+    </style>
+</head>
+<body>
+<svg id="scene" width="800" height="500">
+    <!-- Área de montagem -->
+    <rect x="250" y="150" width="300" height="200" class="assembly-area" />
+    <text x="400" y="145" text-anchor="middle" font-size="14px">Estação</text>
+
+    <!-- Carro (Modelo) -->
+    <rect x="350" y="225" width="100" height="50" class="car" />
+    <text x="400" y="220" text-anchor="middle" font-size="14px">Modelo</text>
+
+    <!-- Operador (círculo azul ao lado do carro) -->
+    <circle cx="470" cy="250" r="20" class="operator" />
+    <text x="470" y="255" text-anchor="middle" font-size="12px" fill="white">Operador</text>
+
+    <!-- Antenas e ondas -->
+    <script>
+        const svg = document.getElementById("scene");
+
+        const antennas = [
+            {x: 150, y: 100},
+            {x: 700, y: 100},
+            {x: 150, y: 400},
+            {x: 700, y: 400}
+        ];
+
+        function createWave(x, y, delay) {
+            const wave = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            wave.setAttribute("cx", x);
+            wave.setAttribute("cy", y);
+            wave.setAttribute("r", 0);
+            wave.setAttribute("class", "wave");
+            svg.appendChild(wave);
+
+            wave.animate([
+                {r: 0, opacity: 0.8},
+                {r: 60, opacity: 0}
+            ], {
+                duration: 2000,
+                delay: delay,
+                iterations: Infinity
+            });
+        }
+
+        antennas.forEach((ant, i) => {
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", ant.x);
+            circle.setAttribute("cy", ant.y);
+            circle.setAttribute("r", 8);
+            circle.setAttribute("class", "antenna");
+            svg.appendChild(circle);
+
+            const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            label.setAttribute("x", ant.x);
+            label.setAttribute("y", ant.y - 12);
+            label.setAttribute("text-anchor", "middle");
+            label.setAttribute("font-size", "12px");
+            label.textContent = "Antena " + (i + 1);
+            svg.appendChild(label);
+
+            for (let j = 0; j < 3; j++) {
+                createWave(ant.x, ant.y, j * 600);
+            }
+        });
+    </script>
+</svg>
+</body>
+</html>
